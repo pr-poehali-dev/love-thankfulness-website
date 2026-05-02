@@ -1,52 +1,64 @@
 import { useState } from "react";
 
 const JASMINE_MAIN = "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/bucket/1d6d9784-508d-4d53-953c-07ca79dacea3.jpg";
+const BEAR1 = "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/files/f2fa34c0-f7ad-4a34-bccf-29975f3120eb.jpg";
+const BEAR2 = "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/files/70943a51-457a-4598-a2c9-8d0595b18f76.jpg";
 
 const PHOTOS = [
   {
     src: "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/bucket/cfbf9037-33d9-4c56-8732-b5a67649018d.jpg",
     num: "01",
-    title: "YOU ARE MY REWARD FROM GOD",
-    message: "You are my reward from God. I never deserved something this beautiful, this real — but here you are. Every time I see you, I think: this is not a coincidence. You were sent to me on purpose.",
+    title: "WALLS OF THE LOUVRE",
+    message: "Every photo of you belongs on the walls of the Louvre. Not as decoration — as the main exhibit. Your beauty should be written by poets, studied by scientists, and published by the greatest magazines in the world. You are not just beautiful. You are art.",
     color: "#FF0090",
     sym: "★",
     rotate: "-1.5deg",
+    bear: BEAR1,
+    bearPos: "right",
   },
   {
     src: "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/bucket/7424bdd2-1c30-437f-948c-df106e4da4a7.jpg",
     num: "02",
-    title: "YOUR BRIGHT SMILE",
-    message: "Your bright smile added so many colors to my life. Before you — everything felt grey. Then you smiled, and suddenly the whole world became vivid, loud, and alive. You are the color in my story.",
+    title: "PARIS IS WAITING FOR US",
+    message: "I truly hope and believe that one day we will go to Paris together and fulfill our shared dreams. Walking the same streets, seeing the same sky — but this time, together. That day will come. I'm certain.",
     color: "#FFEF00",
     sym: "✦",
     rotate: "1.5deg",
+    bear: BEAR2,
+    bearPos: "left",
   },
   {
     src: "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/bucket/1eb740fd-cf7f-44bf-9c91-0bb470dda0cd.jpg",
     num: "03",
-    title: "SO COMFORTABLE WITH YOU",
-    message: "With you I feel so comfortable. No masks, no performance — just me, just you, just this. You make everything feel easy and safe. I don't have to pretend when I'm with you. That is the rarest gift.",
+    title: "THE WHOLE WORLD TOGETHER",
+    message: "After Paris — the whole world. We will travel everywhere, discover everything. A million photos together. A million moments of happiness that belong only to us. Our own story, written by us.",
     color: "#00F5FF",
     sym: "◆",
     rotate: "-1deg",
+    bear: BEAR1,
+    bearPos: "right",
   },
   {
     src: "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/bucket/83763e6e-7ff7-4fb7-b511-8821e2dfe5e7.jpg",
     num: "04",
-    title: "PARIS — OF COURSE IT'S YOU",
-    message: "Even Paris looked at you. The whole city, the whole sky — all of it became a backdrop for you. You belong in every beautiful place on earth. And I am grateful just to exist in the same world as you.",
+    title: "I WILL PROTECT YOU",
+    message: "As long as you are near — I will protect you and take care of you with everything I have. You will never have to face anything alone. I will be your shield, your warmth, your safe place.",
     color: "#AAFF00",
     sym: "●",
     rotate: "1deg",
+    bear: BEAR2,
+    bearPos: "left",
   },
   {
     src: "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/bucket/c451f1eb-15d1-4961-a4a8-cdd364656e8f.jpg",
     num: "05",
-    title: "I TREASURE EVERY MINUTE",
-    message: "I treasure every single minute with you. Not hours, not days — minutes. Because every single one matters. Every laugh, every glance, every moment of silence. I want to collect them all, forever.",
+    title: "A MILLION MOMENTS OF HAPPINESS",
+    message: "We will create a million moments of happiness together. Each one ours. Each one real. I treasure every single minute with you — and I intend to keep collecting them, forever.",
     color: "#FF6B00",
     sym: "▲",
     rotate: "-1.5deg",
+    bear: BEAR1,
+    bearPos: "right",
   },
 ];
 
@@ -58,7 +70,7 @@ interface Particle {
 function generateParticles(): Particle[] {
   const chars = ["★", "✦", "◆", "●", "▲", "✿", "♥"];
   const colors = ["#FF0090", "#FFEF00", "#00F5FF", "#AAFF00", "#FF6B00", "#FF1493"];
-  return Array.from({ length: 20 }, (_, i) => ({
+  return Array.from({ length: 22 }, (_, i) => ({
     id: i,
     left: `${Math.random() * 100}%`,
     size: 10 + Math.random() * 16,
@@ -75,7 +87,7 @@ function FadeIn({ children, delay = 0, className = "" }: { children: React.React
     if (!el) return;
     const obs = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) setVis(true); },
-      { threshold: 0.08 }
+      { threshold: 0.07 }
     );
     obs.observe(el);
   };
@@ -106,6 +118,18 @@ export default function Index() {
           style={{ background: "radial-gradient(circle, #FFEF00, transparent)", filter: "blur(90px)", opacity: 0.1, animationDelay: "4s" }} />
         <div className="animate-orb-float absolute bottom-20 left-1/3 w-80 h-80 rounded-full"
           style={{ background: "radial-gradient(circle, #00F5FF, transparent)", filter: "blur(90px)", opacity: 0.08, animationDelay: "7s" }} />
+      </div>
+
+      {/* Fixed background bear — subtle, large, centered */}
+      <div className="fixed inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
+        <img src={BEAR1} alt=""
+          className="animate-orb-float select-none"
+          style={{
+            width: "min(600px, 90vw)",
+            opacity: 0.04,
+            filter: "blur(2px) saturate(2)",
+            animationDuration: "12s",
+          }} />
       </div>
 
       {/* Particles */}
@@ -175,12 +199,27 @@ export default function Index() {
         </FadeIn>
 
         {/* PHOTO CARDS */}
-        <div className="flex flex-col gap-20">
+        <div className="flex flex-col gap-24">
           {PHOTOS.map((p, i) => (
             <FadeIn key={i} delay={60}>
-              <div>
+              <div className="relative">
+
+                {/* Bear decoration beside photo */}
+                <div className={`absolute ${p.bearPos === "right" ? "-right-8 md:-right-16" : "-left-8 md:-left-16"} top-0 pointer-events-none`}
+                  style={{ zIndex: 0 }}>
+                  <img src={p.bear} alt=""
+                    className="animate-float-bob select-none"
+                    style={{
+                      width: "clamp(70px, 18vw, 110px)",
+                      opacity: 0.55,
+                      filter: `drop-shadow(0 0 12px ${p.color}80)`,
+                      animationDelay: `${i * 0.7}s`,
+                      transform: p.bearPos === "left" ? "scaleX(-1)" : "none",
+                    }} />
+                </div>
+
                 {/* Header line */}
-                <div className="flex items-center gap-3 mb-5">
+                <div className="flex items-center gap-3 mb-5 relative z-10">
                   <span className="font-black text-4xl animate-star-spin"
                     style={{ color: p.color, textShadow: `0 0 15px ${p.color}`, display: "inline-block", fontFamily: "Bebas Neue, sans-serif", animationDelay: `${i * 0.5}s` }}>
                     {p.sym}
@@ -193,7 +232,7 @@ export default function Index() {
                 </div>
 
                 {/* Photo */}
-                <div className="rounded-2xl overflow-hidden mb-6"
+                <div className="rounded-2xl overflow-hidden mb-6 relative z-10"
                   style={{
                     border: `1.5px solid ${p.color}35`,
                     boxShadow: `0 0 30px ${p.color}18, 0 20px 55px rgba(0,0,0,0.55)`,
@@ -201,11 +240,24 @@ export default function Index() {
                   }}>
                   <img src={p.src} alt={p.title}
                     className="w-full object-cover"
-                    style={{ height: "clamp(280px, 75vw, 460px)", objectPosition: "top center" }} />
+                    style={{ height: "clamp(300px, 78vw, 480px)", objectPosition: "top center" }} />
+                  {/* Louvre label */}
+                  <div className="absolute top-3 left-3">
+                    <span className="text-xs font-black tracking-widest px-2 py-1 rounded"
+                      style={{
+                        fontFamily: "Bebas Neue, sans-serif",
+                        background: "rgba(18,3,32,0.75)",
+                        color: p.color,
+                        border: `1px solid ${p.color}50`,
+                        textShadow: `0 0 8px ${p.color}`,
+                      }}>
+                      LOUVRE · WALL {p.num}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Title */}
-                <h2 className="font-black mb-4"
+                <h2 className="font-black mb-4 relative z-10"
                   style={{
                     fontFamily: "Bebas Neue, sans-serif",
                     fontSize: "clamp(1.7rem, 6vw, 2.6rem)",
@@ -217,13 +269,12 @@ export default function Index() {
                 </h2>
 
                 {/* Message */}
-                <p className="text-base md:text-lg leading-relaxed text-purple-100"
+                <p className="text-base md:text-lg leading-relaxed text-purple-100 relative z-10"
                   style={{ fontFamily: "sans-serif" }}>
                   {p.message}
                 </p>
 
-                {/* Bottom accent */}
-                <div className="mt-5 h-px" style={{ background: `linear-gradient(90deg, ${p.color}80, transparent)` }} />
+                <div className="mt-5 h-px relative z-10" style={{ background: `linear-gradient(90deg, ${p.color}80, transparent)` }} />
               </div>
             </FadeIn>
           ))}
@@ -233,35 +284,49 @@ export default function Index() {
         <FadeIn delay={150} className="mt-24">
           <div className="relative rounded-2xl p-8 md:p-12 text-center overflow-hidden"
             style={{
-              background: "rgba(45,10,78,0.7)",
-              border: "1.5px solid rgba(255,0,144,0.4)",
-              boxShadow: "0 0 60px rgba(255,0,144,0.15)",
+              background: "rgba(45,10,78,0.75)",
+              border: "1.5px solid rgba(255,0,144,0.45)",
+              boxShadow: "0 0 70px rgba(255,0,144,0.18)",
             }}>
-            <span className="absolute top-4 right-5 text-5xl font-black opacity-15 animate-star-spin"
+
+            {/* Bear inside final card */}
+            <div className="absolute -bottom-4 -right-4 pointer-events-none">
+              <img src={BEAR2} alt=""
+                className="animate-float-bob select-none"
+                style={{ width: 100, opacity: 0.3, filter: "drop-shadow(0 0 15px #FF0090)" }} />
+            </div>
+            <div className="absolute -top-4 -left-4 pointer-events-none">
+              <img src={BEAR1} alt=""
+                className="animate-float-bob select-none"
+                style={{ width: 80, opacity: 0.25, filter: "drop-shadow(0 0 12px #FFEF00)", animationDelay: "1.5s", transform: "scaleX(-1)" }} />
+            </div>
+
+            <span className="absolute top-5 right-8 text-5xl font-black opacity-15 animate-star-spin"
               style={{ color: "#FFEF00", display: "inline-block" }}>★</span>
-            <span className="absolute bottom-4 left-5 text-4xl font-black opacity-10 animate-rotate-slow"
-              style={{ color: "#00F5FF", display: "inline-block" }}>✦</span>
 
             <div className="relative z-10 space-y-6">
               <p className="font-black text-xs tracking-[0.5em]"
                 style={{ fontFamily: "Bebas Neue, sans-serif", color: "#FF0090", textShadow: "0 0 10px #FF0090" }}>
                 ★ MY WISH FOR YOU ★
               </p>
+
               <h3 className="font-black leading-tight gradient-magenta"
-                style={{ fontFamily: "Bebas Neue, sans-serif", fontSize: "clamp(2rem, 7vw, 3.2rem)" }}>
-                I WISH YOU KNEW<br />HOW RARE YOU ARE
+                style={{ fontFamily: "Bebas Neue, sans-serif", fontSize: "clamp(2rem, 7vw, 3rem)" }}>
+                MY DEAR JASMINE
               </h3>
+
               <div className="w-20 h-0.5 mx-auto"
                 style={{ background: "linear-gradient(90deg, #FF0090, #FFEF00)" }} />
-              <p className="text-base md:text-lg leading-relaxed text-purple-100 max-w-sm mx-auto"
+
+              <p className="text-base md:text-lg leading-relaxed text-purple-100 max-w-md mx-auto"
                 style={{ fontFamily: "sans-serif" }}>
-                I wish you saw yourself the way I see you —
-                the most beautiful, the most captivating,
-                the most real person in any room.
-                This is only Chapter One.
-                There are infinite chapters left to write — with you.
+                Ahead of us are bright days and important events in both of our life paths.
+                I just want you to know — I will be there.
+                I will take care of you and pray that everything in your life is good and beautiful.
+                Always.
               </p>
-              <p className="font-black gradient-cyber text-lg tracking-widest pt-2"
+
+              <p className="font-black gradient-cyber text-xl tracking-widest pt-2"
                 style={{ fontFamily: "Bebas Neue, sans-serif" }}>
                 — ALWAYS YOURS ★
               </p>
@@ -270,7 +335,7 @@ export default function Index() {
         </FadeIn>
 
         {/* FOOTER */}
-        <div className="text-center mt-12">
+        <div className="text-center mt-14">
           <p className="font-black gradient-magenta text-xl tracking-widest"
             style={{ fontFamily: "Bebas Neue, sans-serif" }}>
             FOR PRINCESS JASMINE ★
