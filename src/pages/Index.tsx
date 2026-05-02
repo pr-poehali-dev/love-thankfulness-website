@@ -1,10 +1,41 @@
-import { useEffect, useRef, useState } from "react";
-import Icon from "@/components/ui/icon";
+import { useRef, useState } from "react";
 
-const IMG1 = "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/files/be43fad9-51b0-4d71-aa26-37b06c875789.jpg";
-const IMG2 = "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/files/9714b1b1-9d3d-4fa9-aa9f-e52e49f29e86.jpg";
-const IMG3 = "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/files/4d4f9b5f-07c1-448c-b817-8436a1814921.jpg";
 const COVER = "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/bucket/c3a349a9-3793-4de9-9bc0-e0f8b8469078.jpg";
+
+const PHOTOS = [
+  {
+    src: "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/files/1b89b0e9-90b9-4bff-bc4a-0785bf53d302.jpg",
+    date: "14 февраля 2024",
+    title: "Наш первый вечер",
+    desc: "Помню каждую секунду этого вечера. Ты была в том платье, а я не мог отвести глаз. Это был момент, когда я понял — ты особенная.",
+    color: "#FF0090",
+    sym: "★",
+  },
+  {
+    src: "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/files/bbb8fd95-d5bb-4c00-ae8d-86881ba2fe45.jpg",
+    date: "Весна 2024",
+    title: "Прогулка в парке",
+    desc: "Мы шли и смеялись над какой-то глупостью. Деревья цвели, и ты говорила что-то важное, а я просто смотрел на тебя и думал — вот оно, счастье.",
+    color: "#FFEF00",
+    sym: "✦",
+  },
+  {
+    src: "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/files/c48d8aff-5c53-452b-a740-e34bdc5c273e.jpg",
+    date: "Лето 2024",
+    title: "Под звёздами",
+    desc: "Мы лежали и считали звёзды. Ты уснула на полуслове. Я не спал ещё час — просто смотрел на тебя и не хотел, чтобы этот момент заканчивался.",
+    color: "#00F5FF",
+    sym: "◆",
+  },
+  {
+    src: "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/files/be43fad9-51b0-4d71-aa26-37b06c875789.jpg",
+    date: "Осень 2024",
+    title: "Просто вместе",
+    desc: "Эта фотка ничем не примечательна внешне. Но я помню — мы только что поспорили, потом помирились, и ты засмеялась. Именно такими я хочу помнить нас.",
+    color: "#AAFF00",
+    sym: "●",
+  },
+];
 
 interface Particle {
   id: number; left: string; size: number;
@@ -12,14 +43,14 @@ interface Particle {
 }
 
 function generateParticles(): Particle[] {
-  const chars = ["★", "✦", "◆", "●", "▲", "✿", "♥", "✺"];
+  const chars = ["★", "✦", "◆", "●", "▲", "✿", "♥"];
   const colors = ["#FF0090", "#FFEF00", "#00F5FF", "#AAFF00", "#FF6B00", "#FF1493"];
-  return Array.from({ length: 24 }, (_, i) => ({
+  return Array.from({ length: 20 }, (_, i) => ({
     id: i,
     left: `${Math.random() * 100}%`,
-    size: 12 + Math.random() * 20,
-    duration: 7 + Math.random() * 10,
-    delay: Math.random() * 12,
+    size: 10 + Math.random() * 18,
+    duration: 8 + Math.random() * 10,
+    delay: Math.random() * 14,
     char: chars[Math.floor(Math.random() * chars.length)],
     color: colors[Math.floor(Math.random() * colors.length)],
   }));
@@ -27,97 +58,73 @@ function generateParticles(): Particle[] {
 
 function useIntersection(ref: React.RefObject<Element>) {
   const [visible, setVisible] = useState(false);
-  useEffect(() => {
+  const observed = useRef(false);
+  if (typeof window !== "undefined" && ref.current && !observed.current) {
+    observed.current = true;
+  }
+  useState(() => {
     if (!ref.current) return;
     const obs = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) setVisible(true); },
-      { threshold: 0.1 }
+      { threshold: 0.12 }
     );
     obs.observe(ref.current);
     return () => obs.disconnect();
-  }, [ref]);
+  });
   return visible;
 }
 
-function Reveal({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
+function FadeIn({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  const vis = useIntersection(ref as React.RefObject<Element>);
+  const [vis, setVis] = useState(false);
+
+  useState(() => {
+    if (!ref.current) return;
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) setVis(true); },
+      { threshold: 0.1 }
+    );
+    const el = ref.current;
+    obs.observe(el);
+    return () => obs.disconnect();
+  });
+
   return (
-    <div ref={ref} className={`section-enter ${vis ? "section-visible" : ""} ${className}`}
-      style={{ transitionDelay: `${delay}ms` }}>
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        opacity: vis ? 1 : 0,
+        transform: vis ? "translateY(0)" : "translateY(50px)",
+        transition: `opacity 0.9s ease ${delay}ms, transform 0.9s ease ${delay}ms`,
+      }}
+    >
       {children}
     </div>
   );
 }
 
-const MOMENTS = [
-  { icon: "★", title: "Первый взгляд", desc: "Тот миг, когда всё изменилось навсегда", color: "#FF0090" },
-  { icon: "✦", title: "Уютные вечера", desc: "Когда время останавливается, если ты рядом", color: "#FFEF00" },
-  { icon: "◆", title: "Наш первый закат", desc: "Небо горело так же ярко, как моё сердце", color: "#00F5FF" },
-  { icon: "●", title: "Смех и безумства", desc: "Лучшие моменты — самые спонтанные", color: "#AAFF00" },
-  { icon: "▲", title: "Ночные прогулки", desc: "Город наш, когда мы идём вдвоём", color: "#FF6B00" },
-  { icon: "✿", title: "Тихие утра", desc: "Лучшее пробуждение — когда ты рядом", color: "#FF1493" },
-];
-
-const GALLERY = [
-  { src: IMG1, label: "Мы вместе ★" },
-  { src: IMG2, label: "Наш мир ✦" },
-  { src: IMG3, label: "Навсегда ◆" },
-  { src: IMG1, label: "Счастье ●" },
-  { src: IMG2, label: "Любовь ▲" },
-  { src: IMG3, label: "Бесконечность ✿" },
-];
-
-const COLORS = ["#FF0090", "#FFEF00", "#00F5FF", "#AAFF00", "#FF6B00"];
-
 export default function Index() {
   const [particles] = useState<Particle[]>(generateParticles);
-  const [active, setActive] = useState("home");
-  const [menu, setMenu] = useState(false);
-
-  const NAV = [
-    { id: "home", label: "ГЛАВНАЯ" },
-    { id: "moments", label: "МОМЕНТЫ" },
-    { id: "love", label: "ЛЮБОВЬ" },
-    { id: "thanks", label: "БЛАГОДАРНОСТЬ" },
-    { id: "gallery", label: "ГАЛЕРЕЯ" },
-  ];
-
-  const go = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-    setMenu(false);
-  };
-
-  useEffect(() => {
-    const onScroll = () => {
-      const y = window.scrollY + 100;
-      for (let i = NAV.length - 1; i >= 0; i--) {
-        const el = document.getElementById(NAV[i].id);
-        if (el && el.offsetTop <= y) { setActive(NAV[i].id); break; }
-      }
-    };
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   return (
     <div className="min-h-screen relative overflow-hidden"
-      style={{ background: "radial-gradient(ellipse 120% 60% at 50% 0%, #7C3AED 0%, #4C1D95 30%, #2D0A4E 60%, #1a0530 100%)" }}>
+      style={{ background: "radial-gradient(ellipse 140% 70% at 50% 0%, #7C3AED 0%, #4C1D95 35%, #2D0A4E 65%, #120320 100%)" }}>
 
       {/* BG orbs */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="animate-orb-float absolute top-20 left-10 w-96 h-96 rounded-full"
-          style={{ background: "radial-gradient(circle, #FF0090, transparent)", filter: "blur(80px)", opacity: 0.18 }} />
-        <div className="animate-orb-float absolute bottom-40 right-10 w-80 h-80 rounded-full"
-          style={{ background: "radial-gradient(circle, #FFEF00, transparent)", filter: "blur(80px)", opacity: 0.12, animationDelay: "3s" }} />
-        <div className="animate-orb-float absolute top-1/2 left-1/3 w-64 h-64 rounded-full"
-          style={{ background: "radial-gradient(circle, #00F5FF, transparent)", filter: "blur(80px)", opacity: 0.1, animationDelay: "5s" }} />
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="animate-orb-float absolute top-10 left-0 w-[500px] h-[500px] rounded-full"
+          style={{ background: "radial-gradient(circle, #FF0090, transparent)", filter: "blur(100px)", opacity: 0.15 }} />
+        <div className="animate-orb-float absolute top-1/3 right-0 w-96 h-96 rounded-full"
+          style={{ background: "radial-gradient(circle, #FFEF00, transparent)", filter: "blur(90px)", opacity: 0.1, animationDelay: "4s" }} />
+        <div className="animate-orb-float absolute bottom-20 left-1/4 w-80 h-80 rounded-full"
+          style={{ background: "radial-gradient(circle, #00F5FF, transparent)", filter: "blur(90px)", opacity: 0.08, animationDelay: "7s" }} />
       </div>
 
       {/* Floating particles */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         {particles.map(p => (
-          <span key={p.id} className="floating-particle select-none font-black"
+          <span key={p.id} className="floating-particle select-none font-black absolute bottom-0"
             style={{
               left: p.left, fontSize: p.size,
               animationDuration: `${p.duration}s`,
@@ -130,324 +137,146 @@ export default function Index() {
         ))}
       </div>
 
-      {/* NAV */}
-      <nav className="fixed top-0 left-0 right-0 z-50"
-        style={{ background: "rgba(26,5,48,0.88)", backdropFilter: "blur(20px)", borderBottom: "1px solid rgba(255,0,144,0.25)" }}>
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <button onClick={() => go("home")} className="flex items-center gap-2">
-            <span className="text-xl font-black animate-star-spin inline-block" style={{ color: "#FF0090" }}>★</span>
-            <span className="text-lg font-black tracking-widest neon-pink" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
-              НАША ИСТОРИЯ
-            </span>
-          </button>
+      <div className="relative z-10 max-w-2xl mx-auto px-5 py-16">
 
-          <div className="hidden md:flex gap-6">
-            {NAV.map(n => (
-              <button key={n.id} onClick={() => go(n.id)}
-                className={`nav-item text-xs font-black tracking-widest transition-colors ${active === n.id ? "neon-yellow" : "text-purple-300 hover:text-white"}`}>
-                {n.label}
-              </button>
-            ))}
-          </div>
-
-          <button className="md:hidden" style={{ color: "#FF0090" }} onClick={() => setMenu(!menu)}>
-            <Icon name={menu ? "X" : "Menu"} size={22} />
-          </button>
-        </div>
-        {menu && (
-          <div className="md:hidden px-4 pb-5 pt-2 flex flex-col gap-3 animate-fade-in-up"
-            style={{ borderTop: "1px solid rgba(255,0,144,0.2)" }}>
-            {NAV.map(n => (
-              <button key={n.id} onClick={() => go(n.id)}
-                className="text-left text-xs font-black tracking-widest text-purple-300 hover:text-white py-1"
-                style={{ fontFamily: "Bebas Neue, sans-serif" }}>
-                {n.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </nav>
-
-      {/* ===== HERO ===== */}
-      <section id="home" className="relative z-10 min-h-screen flex flex-col items-center justify-center pt-20 px-4 text-center">
-        <Reveal className="mb-8">
-          <div className="relative inline-block animate-float-bob">
-            <div className="w-60 h-60 md:w-80 md:h-80 rounded-2xl overflow-hidden mx-auto"
+        {/* HERO */}
+        <FadeIn className="text-center mb-20">
+          <div className="relative inline-block mb-8 animate-float-bob">
+            <div className="w-56 h-56 md:w-72 md:h-72 rounded-2xl overflow-hidden mx-auto"
               style={{
-                boxShadow: "0 0 0 3px #FF0090, 0 0 30px rgba(255,0,144,0.5), 0 0 80px rgba(107,33,168,0.6)",
-                transform: "rotate(-2deg)"
+                boxShadow: "0 0 0 3px #FF0090, 0 0 40px rgba(255,0,144,0.45), 0 0 80px rgba(107,33,168,0.5)",
+                transform: "rotate(-2deg)",
               }}>
-              <img src={COVER} alt="Our Story" className="w-full h-full object-cover" />
+              <img src={COVER} alt="cover" className="w-full h-full object-cover" />
             </div>
-            <span className="absolute -top-5 -right-5 text-4xl font-black animate-star-spin" style={{ color: "#FFEF00", textShadow: "0 0 15px #FFEF00" }}>★</span>
-            <span className="absolute -bottom-4 -left-5 text-3xl font-black animate-rotate-slow" style={{ color: "#00F5FF", textShadow: "0 0 12px #00F5FF" }}>✦</span>
-            <span className="absolute top-1/2 -right-8 text-2xl font-black animate-star-spin" style={{ color: "#FF0090", animationDelay: "0.5s" }}>◆</span>
+            <span className="absolute -top-5 -right-5 text-4xl font-black animate-star-spin"
+              style={{ color: "#FFEF00", textShadow: "0 0 15px #FFEF00", display: "inline-block" }}>★</span>
+            <span className="absolute -bottom-4 -left-5 text-3xl font-black animate-rotate-slow"
+              style={{ color: "#00F5FF", textShadow: "0 0 12px #00F5FF", display: "inline-block" }}>✦</span>
           </div>
-        </Reveal>
 
-        <Reveal delay={200}>
-          <p className="text-xs font-black tracking-[0.5em] neon-pink mb-2" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
-            ★ СПЕЦИАЛЬНО ДЛЯ ТЕБЯ ★
+          <p className="text-xs font-black tracking-[0.5em] mb-2"
+            style={{ fontFamily: "Bebas Neue, sans-serif", color: "#FF0090", textShadow: "0 0 12px #FF0090" }}>
+            ★ ДЛЯ ТЕБЯ ★
           </p>
-          <h1 className="font-black leading-none mb-3"
-            style={{ fontFamily: "Bebas Neue, sans-serif", fontSize: "clamp(3rem, 12vw, 8rem)", letterSpacing: "0.05em" }}>
-            <span className="gradient-magenta block">НАША</span>
-            <span className="gradient-cyber block">ИСТОРИЯ</span>
+          <h1 className="font-black leading-none mb-4 gradient-magenta"
+            style={{ fontFamily: "Bebas Neue, sans-serif", fontSize: "clamp(3.5rem, 14vw, 7rem)", letterSpacing: "0.04em" }}>
+            НАША ИСТОРИЯ
           </h1>
-        </Reveal>
-
-        <Reveal delay={400}>
-          <p className="text-sm font-bold tracking-[0.3em] text-purple-300 mb-8 uppercase"
+          <p className="text-purple-300 tracking-widest text-sm"
             style={{ fontFamily: "Bebas Neue, sans-serif" }}>
-            Два сердца · Одна вселенная
+            КАЖДЫЙ СНИМОК — ЭТО МЫ
           </p>
-          <div className="flex flex-wrap justify-center gap-3 mb-10">
-            {["★ МОМЕНТЫ", "✦ ЛЮБОВЬ", "◆ БЛАГОДАРНОСТЬ", "● ГАЛЕРЕЯ"].map((t, i) => (
-              <span key={i} className="px-4 py-1.5 text-xs font-black tracking-widest"
-                style={{
-                  fontFamily: "Bebas Neue, sans-serif",
-                  border: `1.5px solid ${COLORS[i]}`,
-                  color: COLORS[i],
-                  boxShadow: `0 0 10px ${COLORS[i]}30`,
-                }}>
-                {t}
-              </span>
-            ))}
-          </div>
-          <button onClick={() => go("moments")}
-            className="px-10 py-4 font-black text-lg tracking-widest text-black uppercase transition-all hover:scale-105 active:scale-95"
-            style={{
-              fontFamily: "Bebas Neue, sans-serif",
-              background: "linear-gradient(135deg, #FF0090, #FFEF00)",
-              boxShadow: "0 0 20px rgba(255,0,144,0.5), 0 0 40px rgba(255,239,0,0.3)",
-              letterSpacing: "0.15em",
-            }}>
-            НАЧАТЬ ПУТЕШЕСТВИЕ ★
-          </button>
-        </Reveal>
+        </FadeIn>
 
-        <div className="absolute bottom-8 animate-bounce">
-          <Icon name="ChevronDown" size={32} style={{ color: "#FF0090" }} />
-        </div>
-      </section>
+        {/* PHOTO CARDS */}
+        <div className="flex flex-col gap-20">
+          {PHOTOS.map((photo, i) => (
+            <FadeIn key={i} delay={i * 80}>
+              <div className="relative">
 
-      {/* ===== МОМЕНТЫ ===== */}
-      <section id="moments" className="relative z-10 py-24 px-4">
-        <div className="max-w-6xl mx-auto">
-          <Reveal>
-            <div className="text-center mb-16">
-              <p className="text-xs font-black tracking-[0.5em] neon-pink mb-2" style={{ fontFamily: "Bebas Neue, sans-serif" }}>★ ★ ★</p>
-              <h2 className="font-black leading-none mb-4"
-                style={{ fontFamily: "Bebas Neue, sans-serif", fontSize: "clamp(2.5rem, 8vw, 5rem)" }}>
-                <span className="gradient-magenta">НАШИ ЛЮБИМЫЕ</span><br />
-                <span className="gradient-cyber">МОМЕНТЫ</span>
-              </h2>
-            </div>
-          </Reveal>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
-            {MOMENTS.map((m, i) => (
-              <Reveal key={i} delay={i * 80}>
-                <div className="card-dark p-7 rounded-xl">
-                  <span className="text-4xl font-black mb-4 block animate-star-spin"
-                    style={{ color: m.color, textShadow: `0 0 15px ${m.color}`, animationDelay: `${i * 0.8}s`, display: "inline-block" }}>
-                    {m.icon}
+                {/* Number */}
+                <div className="flex items-center gap-3 mb-5">
+                  <span className="font-black text-5xl animate-star-spin"
+                    style={{ color: photo.color, textShadow: `0 0 18px ${photo.color}`, display: "inline-block", fontFamily: "Bebas Neue, sans-serif" }}>
+                    {photo.sym}
                   </span>
-                  <h3 className="font-black text-xl tracking-wider mb-2 text-white" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
-                    {m.title}
-                  </h3>
-                  <p className="text-purple-400 text-sm leading-relaxed" style={{ fontFamily: "sans-serif" }}>
-                    {m.desc}
-                  </p>
-                  <div className="mt-4 h-px" style={{ background: `linear-gradient(90deg, ${m.color}, transparent)` }} />
+                  <div className="flex-1 h-px" style={{ background: `linear-gradient(90deg, ${photo.color}, transparent)` }} />
+                  <span className="text-xs font-black tracking-widest"
+                    style={{ color: photo.color, fontFamily: "Bebas Neue, sans-serif" }}>
+                    {photo.date}
+                  </span>
                 </div>
-              </Reveal>
-            ))}
-          </div>
 
-          <Reveal>
-            <div className="rounded-2xl overflow-hidden relative" style={{ boxShadow: "0 0 40px rgba(255,0,144,0.25)" }}>
-              <img src={IMG2} alt="moments" className="w-full h-64 md:h-96 object-cover" />
-              <div className="absolute inset-0 flex items-end p-8"
-                style={{ background: "linear-gradient(transparent, rgba(26,5,48,0.92))" }}>
-                <h3 className="font-black gradient-magenta" style={{ fontFamily: "Bebas Neue, sans-serif", fontSize: "clamp(1.5rem, 4vw, 3rem)" }}>
-                  КАЖДЫЙ МОМЕНТ С ТОБОЙ — ШЕДЕВР ★
-                </h3>
-              </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ===== ПРИЗНАНИЕ ===== */}
-      <section id="love" className="relative z-10 py-24 px-4">
-        <div className="max-w-4xl mx-auto">
-          <Reveal>
-            <div className="text-center mb-12">
-              <p className="text-xs font-black tracking-[0.5em] neon-yellow mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>✦ ✦ ✦</p>
-              <h2 className="font-black leading-none"
-                style={{ fontFamily: "Bebas Neue, sans-serif", fontSize: "clamp(2.5rem, 8vw, 5rem)" }}>
-                <span className="gradient-cyber">ПРИЗНАНИЕ</span><br />
-                <span className="gradient-magenta">В ЛЮБВИ</span>
-              </h2>
-            </div>
-          </Reveal>
-
-          <Reveal delay={200}>
-            <div className="relative rounded-2xl p-8 md:p-14 overflow-hidden"
-              style={{
-                background: "rgba(45,10,78,0.7)",
-                border: "1px solid rgba(255,0,144,0.4)",
-                boxShadow: "0 0 50px rgba(255,0,144,0.12), inset 0 0 50px rgba(107,33,168,0.08)"
-              }}>
-              <span className="absolute top-4 right-6 text-5xl font-black opacity-20 animate-star-spin"
-                style={{ color: "#FFEF00" }}>★</span>
-              <span className="absolute bottom-4 left-6 text-4xl font-black opacity-15 animate-rotate-slow"
-                style={{ color: "#00F5FF" }}>✦</span>
-
-              <div className="relative z-10 space-y-8 text-center">
-                <blockquote className="font-black leading-tight"
+                {/* Photo */}
+                <div className="rounded-2xl overflow-hidden mb-6"
                   style={{
-                    fontFamily: "Bebas Neue, sans-serif",
-                    fontSize: "clamp(1.5rem, 4vw, 2.8rem)",
-                    color: "#FF0090",
-                    textShadow: "0 0 20px rgba(255,0,144,0.4)",
+                    border: `1.5px solid ${photo.color}40`,
+                    boxShadow: `0 0 30px ${photo.color}20, 0 20px 60px rgba(0,0,0,0.5)`,
+                    transform: i % 2 === 0 ? "rotate(-1deg)" : "rotate(1deg)",
                   }}>
-                  «ТЫ МОЁ САМОЕ ЯРКОЕ ОТКРЫТИЕ — МОЙ ЛЮБИМЫЙ ЧЕЛОВЕК, МОЯ ВСЕЛЕННАЯ»
-                </blockquote>
-
-                <div className="flex justify-center gap-3">
-                  {["★","✦","◆","●","▲"].map((s, i) => (
-                    <span key={i} className="text-2xl font-black animate-star-spin"
-                      style={{ color: COLORS[i], animationDelay: `${i * 0.4}s`, display: "inline-block" }}>
-                      {s}
-                    </span>
-                  ))}
+                  <img src={photo.src} alt={photo.title} className="w-full object-cover"
+                    style={{ height: "clamp(220px, 60vw, 380px)" }} />
                 </div>
 
-                <p className="text-base md:text-lg leading-relaxed text-purple-200 max-w-2xl mx-auto"
-                  style={{ fontFamily: "sans-serif" }}>
-                  Каждый день рядом с тобой — это подарок, который я не заслужил.
-                  Ты делаешь мою жизнь ярче любого неона, теплее любого заката.
-                  Ты — моя любовь, мой дом, моя вселенная.
-                </p>
-              </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ===== БЛАГОДАРНОСТЬ ===== */}
-      <section id="thanks" className="relative z-10 py-24 px-4">
-        <div className="max-w-5xl mx-auto">
-          <Reveal>
-            <div className="text-center mb-14">
-              <p className="text-xs font-black tracking-[0.5em] neon-cyan mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>◆ ◆ ◆</p>
-              <h2 className="font-black leading-none"
-                style={{ fontFamily: "Bebas Neue, sans-serif", fontSize: "clamp(2.5rem, 8vw, 5rem)" }}>
-                <span className="gradient-magenta">ВЫРАЖЕНИЕ</span><br />
-                <span className="gradient-cyber">БЛАГОДАРНОСТИ</span>
-              </h2>
-            </div>
-          </Reveal>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              { sym: "★", text: "Спасибо за твои объятия — они моя броня от всего мира", color: "#FF0090" },
-              { sym: "✦", text: "Спасибо за твою улыбку — она ярче любого неона", color: "#FFEF00" },
-              { sym: "◆", text: "Спасибо за поддержку в моменты, когда я готов был сдаться", color: "#00F5FF" },
-              { sym: "●", text: "Спасибо за смех — ты делаешь каждый день праздником", color: "#AAFF00" },
-              { sym: "▲", text: "Спасибо за то, что веришь в меня сильнее, чем я сам", color: "#FF6B00" },
-              { sym: "✿", text: "Спасибо за то, что ты просто есть — это главное", color: "#FF1493" },
-            ].map((item, i) => (
-              <Reveal key={i} delay={i * 80}>
-                <div className="card-dark flex items-start gap-5 p-6 rounded-xl">
-                  <span className="text-3xl font-black shrink-0 animate-star-spin"
-                    style={{ color: item.color, textShadow: `0 0 12px ${item.color}`, animationDelay: `${i * 0.6}s`, display: "inline-block" }}>
-                    {item.sym}
-                  </span>
-                  <p className="text-base text-purple-200 leading-relaxed" style={{ fontFamily: "sans-serif" }}>
-                    {item.text}
+                {/* Text */}
+                <div className="px-1">
+                  <h2 className="font-black mb-3 gradient-magenta"
+                    style={{ fontFamily: "Bebas Neue, sans-serif", fontSize: "clamp(2rem, 7vw, 3rem)", letterSpacing: "0.04em" }}>
+                    {photo.title}
+                  </h2>
+                  <p className="text-base md:text-lg leading-relaxed text-purple-200"
+                    style={{ fontFamily: "sans-serif" }}>
+                    {photo.desc}
                   </p>
                 </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== ГАЛЕРЕЯ ===== */}
-      <section id="gallery" className="relative z-10 py-24 px-4">
-        <div className="max-w-6xl mx-auto">
-          <Reveal>
-            <div className="text-center mb-14">
-              <p className="text-xs font-black tracking-[0.5em] neon-pink mb-3" style={{ fontFamily: "Bebas Neue, sans-serif" }}>● ● ●</p>
-              <h2 className="font-black leading-none"
-                style={{ fontFamily: "Bebas Neue, sans-serif", fontSize: "clamp(2.5rem, 8vw, 5rem)" }}>
-                <span className="gradient-cyber">ГАЛЕРЕЯ</span><br />
-                <span className="gradient-magenta">НАШИХ ФОТОГРАФИЙ</span>
-              </h2>
-            </div>
-          </Reveal>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-            {GALLERY.map((g, i) => (
-              <Reveal key={i} delay={i * 70}>
-                <div className="group relative rounded-xl overflow-hidden cursor-pointer"
-                  style={{ aspectRatio: "1", border: "1px solid rgba(255,0,144,0.2)" }}>
-                  <img src={g.src} alt={g.label}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4"
-                    style={{ background: "linear-gradient(transparent, rgba(26,5,48,0.92))" }}>
-                    <span className="font-black text-white tracking-widest text-sm"
-                      style={{ fontFamily: "Bebas Neue, sans-serif", textShadow: "0 0 10px #FF0090" }}>
-                      {g.label}
-                    </span>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-
-          <Reveal delay={300}>
-            <div className="rounded-2xl p-10 text-center"
-              style={{
-                background: "rgba(45,10,78,0.4)",
-                border: "2px dashed rgba(255,0,144,0.4)",
-              }}>
-              <span className="text-5xl font-black block mb-4 animate-star-spin"
-                style={{ color: "#FF0090", textShadow: "0 0 15px #FF0090", display: "inline-block" }}>◆</span>
-              <p className="font-black text-2xl tracking-widest text-white mb-2" style={{ fontFamily: "Bebas Neue, sans-serif" }}>
-                ЗДЕСЬ БУДУТ ВАШИ ФОТО
-              </p>
-              <p className="text-purple-400 text-sm" style={{ fontFamily: "sans-serif" }}>
-                Напишите мне — и я добавлю ваши совместные фотографии прямо сюда
-              </p>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="relative z-10 py-12 px-4 text-center"
-        style={{ borderTop: "1px solid rgba(255,0,144,0.2)" }}>
-        <div className="flex justify-center gap-4 text-3xl mb-5">
-          {["★", "✦", "◆", "●", "▲"].map((s, i) => (
-            <span key={i} className="font-black animate-star-spin"
-              style={{ color: COLORS[i], animationDelay: `${i * 0.4}s`, display: "inline-block" }}>
-              {s}
-            </span>
+              </div>
+            </FadeIn>
           ))}
         </div>
-        <p className="font-black gradient-magenta text-3xl tracking-widest"
-          style={{ fontFamily: "Bebas Neue, sans-serif" }}>
-          С ЛЮБОВЬЮ, ДЛЯ ТЕБЯ
-        </p>
-        <p className="text-purple-500 text-sm mt-2 tracking-widest"
-          style={{ fontFamily: "Bebas Neue, sans-serif" }}>
-          2026 · НАША ИСТОРИЯ ЛЮБВИ
-        </p>
-      </footer>
+
+        {/* ФИНАЛЬНОЕ ПОЖЕЛАНИЕ */}
+        <FadeIn delay={200} className="mt-24">
+          <div className="relative rounded-2xl p-8 md:p-12 text-center overflow-hidden"
+            style={{
+              background: "rgba(45,10,78,0.65)",
+              border: "1.5px solid rgba(255,0,144,0.35)",
+              boxShadow: "0 0 60px rgba(255,0,144,0.12)",
+            }}>
+
+            <span className="absolute top-4 right-6 text-5xl font-black opacity-15 animate-star-spin"
+              style={{ color: "#FFEF00", display: "inline-block" }}>★</span>
+            <span className="absolute bottom-4 left-6 text-4xl font-black opacity-10 animate-rotate-slow"
+              style={{ color: "#00F5FF", display: "inline-block" }}>✦</span>
+
+            <div className="relative z-10 space-y-6">
+              <p className="font-black" style={{ fontFamily: "Bebas Neue, sans-serif", color: "#FF0090", fontSize: "1rem", letterSpacing: "0.4em", textShadow: "0 0 12px #FF0090" }}>
+                ★ МОЁ ПОЖЕЛАНИЕ ★
+              </p>
+
+              <h3 className="font-black gradient-cyber leading-tight"
+                style={{ fontFamily: "Bebas Neue, sans-serif", fontSize: "clamp(2rem, 7vw, 3.5rem)" }}>
+                СПАСИБО ЗА ТО, ЧТО ТЫ ЕСТЬ
+              </h3>
+
+              <div className="w-20 h-0.5 mx-auto" style={{ background: "linear-gradient(90deg, #FF0090, #FFEF00)" }} />
+
+              <p className="text-base md:text-lg leading-relaxed text-purple-200 max-w-lg mx-auto"
+                style={{ fontFamily: "sans-serif" }}>
+                Я хочу, чтобы каждый день ты просыпалась и знала —
+                рядом есть человек, для которого ты главная.
+                Пусть у нас будет ещё тысяча таких фотографий.
+                Я тебя люблю.
+              </p>
+
+              <div className="flex justify-center gap-4 text-2xl font-black pt-2">
+                {["★", "✦", "◆", "●", "▲"].map((s, i) => (
+                  <span key={i} className="animate-star-spin"
+                    style={{
+                      color: ["#FF0090","#FFEF00","#00F5FF","#AAFF00","#FF6B00"][i],
+                      display: "inline-block",
+                      animationDelay: `${i * 0.4}s`,
+                    }}>
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </FadeIn>
+
+        {/* FOOTER */}
+        <div className="text-center mt-14 pb-4">
+          <p className="font-black gradient-magenta text-2xl tracking-widest"
+            style={{ fontFamily: "Bebas Neue, sans-serif" }}>
+            С ЛЮБОВЬЮ, ДЛЯ ТЕБЯ
+          </p>
+          <p className="text-purple-600 text-xs mt-1 tracking-widest"
+            style={{ fontFamily: "Bebas Neue, sans-serif" }}>
+            2026
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
