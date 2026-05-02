@@ -366,6 +366,134 @@ export default function Index() {
           </div>
         </FadeIn>
 
+        {/* ===== CHAPTER TWO ===== */}
+        <FadeIn className="mt-24 mb-16 text-center">
+          <div className="inline-flex items-center gap-4">
+            <div className="h-px w-12" style={{ background: "linear-gradient(90deg, transparent, #FF0090)" }} />
+            <p className="font-black text-xs tracking-[0.6em]"
+              style={{ fontFamily: "Bebas Neue, sans-serif", color: "#FF0090", textShadow: "0 0 12px #FF0090" }}>
+              ★ CHAPTER TWO ★
+            </p>
+            <div className="h-px w-12" style={{ background: "linear-gradient(90deg, #FF0090, transparent)" }} />
+          </div>
+          <h2 className="font-black leading-none mt-3 gradient-cyber"
+            style={{ fontFamily: "Bebas Neue, sans-serif", fontSize: "clamp(2.5rem, 10vw, 5rem)", letterSpacing: "0.03em" }}>
+            YOU ARE MY JOY
+          </h2>
+        </FadeIn>
+
+        <div className="flex flex-col gap-24">
+          {[
+            {
+              src: "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/bucket/c2e8795f-3375-4b15-822b-667a67f62e4f.jpg",
+              title: "I LOVE WHEN YOU SMILE",
+              message: "I love when you smile and feel happy. That moment — when your face lights up and your joy just radiates — it's the most beautiful thing I have ever seen. Keep smiling. Always.",
+              color: "#FF0090",
+              sym: "★",
+              bear: BEAR1,
+              bearPos: "right",
+              rotate: "-1.5deg",
+            },
+            {
+              src: "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/bucket/acca2934-eab5-43f7-8ea4-020d612180a7.jpg",
+              title: "YOUR ENERGY INSPIRES ME",
+              message: "Your energy and your laughter inspire me even more than you know. When you are around, everything feels possible. You push me to be better just by being yourself.",
+              color: "#FFEF00",
+              sym: "✦",
+              bear: BEAR2,
+              bearPos: "left",
+              rotate: "1.5deg",
+            },
+            {
+              src: "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/bucket/ed7e6ef0-716d-4f0d-9ab1-37a467e9932f.jpg",
+              title: "YOU ARE SO BRILLIANT",
+              message: "You are so cool, so smart, so hardworking. You have an incredibly high emotional intelligence — you see people, you understand them, you make them feel heard. That is a superpower.",
+              color: "#00F5FF",
+              sym: "◆",
+              bear: BEAR1,
+              bearPos: "right",
+              rotate: "-1deg",
+            },
+            {
+              src: "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/bucket/1ffc5336-7fd2-4337-8445-eda8e38eb613.jpg",
+              title: "YOU ARE MY SWEETNESS",
+              message: "You are my joy. You are my sweetness. There is no better way to say it — you are the thing that makes every ordinary day feel like something worth living. You are everything.",
+              color: "#AAFF00",
+              sym: "●",
+              bear: BEAR2,
+              bearPos: "left",
+              rotate: "1deg",
+            },
+            {
+              src: "https://cdn.poehali.dev/projects/ea17fd0a-dd98-4f3b-8259-4dde8eb0b5c7/bucket/c4c5455c-9ed0-417e-ae26-674ff12eb9f1.jpg",
+              title: "PARIS KNEW YOUR NAME",
+              message: "Even Paris recognized you. That smile in front of the Eiffel Tower — it outshone the whole city. One day we will go back there together, and this time we will create our own story.",
+              color: "#FF6B00",
+              sym: "▲",
+              bear: BEAR1,
+              bearPos: "right",
+              rotate: "-1.5deg",
+            },
+          ].map((p, i) => (
+            <FadeIn key={`ch2-${i}`} delay={60}>
+              <div className="relative">
+                <div className={`absolute ${p.bearPos === "right" ? "-right-6 md:-right-14" : "-left-6 md:-left-14"} top-8 pointer-events-none`}
+                  style={{ zIndex: 0 }}>
+                  <img src={p.bear} alt="" className="animate-float-bob select-none"
+                    style={{
+                      width: "clamp(65px, 16vw, 105px)",
+                      opacity: 0.6,
+                      filter: `drop-shadow(0 0 14px ${p.color}90)`,
+                      animationDelay: `${i * 0.7}s`,
+                      transform: p.bearPos === "left" ? "scaleX(-1)" : "none",
+                    }} />
+                </div>
+
+                <div className="flex items-center gap-3 mb-5 relative z-10">
+                  <span className="font-black text-4xl animate-star-spin"
+                    style={{ color: p.color, textShadow: `0 0 15px ${p.color}`, display: "inline-block", fontFamily: "Bebas Neue, sans-serif", animationDelay: `${i * 0.5}s` }}>
+                    {p.sym}
+                  </span>
+                  <div className="flex-1 h-px" style={{ background: `linear-gradient(90deg, ${p.color}, transparent)` }} />
+                  <span className="text-xs font-black tracking-widest"
+                    style={{ color: p.color, fontFamily: "Bebas Neue, sans-serif" }}>
+                    PHOTO 0{i + 1}
+                  </span>
+                </div>
+
+                <div className="rounded-2xl overflow-hidden mb-6 relative z-10"
+                  style={{
+                    border: `1.5px solid ${p.color}35`,
+                    boxShadow: `0 0 30px ${p.color}18, 0 20px 55px rgba(0,0,0,0.55)`,
+                    transform: `rotate(${p.rotate})`,
+                  }}>
+                  <img src={p.src} alt={p.title} className="w-full object-cover"
+                    style={{ height: "clamp(300px, 78vw, 460px)", objectPosition: "top center" }} />
+                </div>
+
+                <h2 className="font-black mb-3 relative z-10"
+                  style={{
+                    fontFamily: "Bebas Neue, sans-serif",
+                    fontSize: "clamp(1.6rem, 5.5vw, 2.4rem)",
+                    color: p.color,
+                    textShadow: `0 0 20px ${p.color}55`,
+                    letterSpacing: "0.03em",
+                  }}>
+                  {p.title}
+                </h2>
+
+                <p className="text-base md:text-lg leading-relaxed text-purple-100 relative z-10"
+                  style={{ fontFamily: "sans-serif" }}>
+                  {p.message}
+                </p>
+
+                <div className="mt-5 h-px relative z-10"
+                  style={{ background: `linear-gradient(90deg, ${p.color}80, transparent)` }} />
+              </div>
+            </FadeIn>
+          ))}
+        </div>
+
         {/* PARIS DREAM */}
         <FadeIn delay={80} className="mt-20">
           <div className="rounded-2xl p-7 relative overflow-hidden"
